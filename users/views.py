@@ -1,9 +1,13 @@
+from django.shortcuts import render, redirect
+from django.shortcuts import render
+from django.contrib.auth import login
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 
 from .forms import CustomLoginForm, CustomUserCreationForm
 from .models import User
+
 
 
 def home(request):
@@ -20,6 +24,11 @@ def create_user(request):
     else:
         form = CustomUserCreationForm()
 
+    context = {
+        "form": form
+    }
+
+    return render(request, "users/create_user.html", context)
     return render(request, "users/create_user.html", {"form": form})
 
 
@@ -30,10 +39,23 @@ def users_list(request):
 
 def login_view(request):
     if request.method == "POST":
+
+        form = CustomLoginForm(
+            request,
+            data=request.POST
+        )
+
         form = CustomLoginForm(request, data=request.POST)
         if form.is_valid():
             username = form.cleaned_data.get("username")
             password = form.cleaned_data.get("password")
+
+            user = authenticate(
+                request,
+                username=username,
+                password=password
+            )
+
             user = authenticate(request, username=username, password=password)
             if user is not None:
                 login(request, user)
@@ -41,6 +63,9 @@ def login_view(request):
     else:
         form = CustomLoginForm()
 
+    context = {
+        "form": form
+    }
     return render(request, "users/login.html", {"form": form})
 
 
@@ -52,4 +77,13 @@ def logout_view(request):
 
 @login_required
 def dashboard(request):
+    return render(request, "users/dashboard.html", {"user": request.user})
+
+    user = request.user
+
+    context = {
+        "user": user
+    }
+
+    return render(request, "users/dashboard.html", context)
     return render(request, "users/dashboard.html", {"user": request.user})
