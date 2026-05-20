@@ -1,0 +1,21 @@
+<h1>Dashboard</h1>
+
+<p>
+    Welcome {{ user.username }}
+</p>
+
+<p>
+    Role : {{ user.role }}
+</p>
+
+<p>
+    University : {{ user.university }}
+</p>
+
+<p>
+    Department : {{ user.department }}
+</p>
+
+<a href="{% url 'logout' %}">
+    Logout
+</a>
